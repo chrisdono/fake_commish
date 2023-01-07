@@ -1,0 +1,8 @@
+fc_venv/
+
+*.pyc
+__pycache__/
+
+.env
+
+ai_prompt.txt
