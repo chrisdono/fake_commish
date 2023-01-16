@@ -16,18 +16,6 @@ url = "http://api.giphy.com/v1/gifs/search"
 sw_index = 0 
 sl_index = 0 
 sm_index = 0
-# params = parse.urlencode({
-#   "q": "ryan gosling",
-#   "api_key": api_key,
-#   "limit": "2"
-# })
-# 
-# with request.urlopen("".join((url, "?", params))) as response:
-#   data = json.loads(response.read())
-
-# # print(json.dumps(data, sort_keys=True, indent=4))
-# print(data['data'][0]['url'])
-# print(data['data'][1]['url'])
 
 def get_winner_gif():
     sw_index = random.randint(0,len(search_winner)-1)
