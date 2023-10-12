@@ -1,3 +1,4 @@
+import datetime
 import sys
 import os
 import openai
@@ -35,7 +36,8 @@ class wrapup:
         output.append(f'WEEK {self.week} MATCHUPS\n')
         for m in self.league.scoreboard(week=self.week):
             output.append('- ')
-            output.append(m.home_team.owner.replace('  ', ' '))
+            # output.append(m.home_team.owner.replace('  ', ' '))
+            output.append(util_functions.filter_name(m.home_team.owner.replace('  ', ' ')))
             output.append(' (')
             output.append(m.home_team.team_name.strip().replace('-', '').replace('  ', ' '))
             output.append(') scored ')
@@ -44,7 +46,8 @@ class wrapup:
                 output.append(' to beat ')
             else:
                 output.append(' to lose to ')
-            output.append(m.away_team.owner.replace('  ', ' '))
+            # output.append(m.away_team.owner.replace('  ', ' '))
+            output.append(util_functions.filter_name(m.away_team.owner.replace('  ', ' ')))
             output.append(' (')
             output.append(m.away_team.team_name.strip().replace('-', '').replace('  ', ' '))
             output.append(') who scored ')
@@ -67,7 +70,7 @@ class wrapup:
         for t in self.league.standings():
             output.append(str(i))
             output.append('. ')
-            output.append(t.owner.strip().replace('-', '').replace('  ', ' '))
+            output.append(util_functions.filter_name(t.owner.strip().replace('-', '').replace('  ', ' ')))
             output.append('. ')
             output.append(str(t.wins))
             output.append('-')
@@ -107,9 +110,9 @@ class wrapup:
                 lowest_score = [key, item[0]]
 
         # output.append('Big Dick:  ')
-        output.append(f'{highest_score[0]} {str(highest_score[1])} \n')
+        output.append(f'{util_functions.filter_name(highest_score[0])} {str(highest_score[1])} \n')
         # output.append('Little Bitch:  ')
-        output.append(f'{lowest_score[0]} {str(lowest_score[1])} \n')
+        output.append(f'{util_functions.filter_name(lowest_score[0])} {str(lowest_score[1])} \n')
 
         # output.append('\n')
         # output.append('Lucky Winners:\n')
@@ -133,11 +136,15 @@ class wrapup:
 
 def get_summary(new_prompt):
     response = openai.Completion.create(
-            model="text-davinci-002",
+            # model="text-davinci-002",
+            # model="gpt-3.5-turbo", # have to use completions api instead
+            model="text-davinci-003",
             # model="text-curie-001",
             # max_tokens=500,
             # temperature=0.92,
-            max_tokens=1600,
+            # max_tokens=1600,
+            max_tokens=2000,
+            # max_tokens=4000,
             presence_penalty=0.1,
             frequency_penalty=0.4,
             temperature=0.90,
@@ -154,16 +161,21 @@ def generate_prompt(new_wrapup):
 if __name__ == "__main__":
     week = int(sys.argv[1])
     year = int(sys.argv[2])
+    year_string = str(year)
     filename = "week_" + str(week)
     # don't need a title
     filetitle = "Week " + str(week)
-    f = open("../rebeltigerffl/"+filename+".md", "w")
+    current_date = datetime.datetime.now()
+    date_formatted = current_date.strftime("%Y-%m-%d")
+
+    f = open("../rebeltigerffl/_posts/"+str(year)+"_wrapups/"+date_formatted+"-"+filename+".md", "w")
 
     # add front matter
     f.write("---\n")
-    f.write("layout: page\n")
+    f.write("layout: post\n")
     f.write(f"title: {filetitle} Wrapup\n")
-    f.write(f"subtitle: October 12, 2022\n")
+    f.write(f"tags: {year_string} wrapup\n")
+    # f.write(f"subtitle: October 12, 2022\n")
     f.write("---\n")
     f.write("\n")
 
@@ -211,7 +223,7 @@ if __name__ == "__main__":
     f.write("### Matchups Overview\n")
     f.write("\n")
     matchup_plot.generate_matchup_plot(week, year)
-    f.write("![](../assets/img/week"+str(week)+"_matchups.png)\n")
+    f.write("![](../assets/img/matchup_"+str(year)+"-"+str(week)+".png)\n")
 
     f.write("\n")
     
@@ -220,7 +232,7 @@ if __name__ == "__main__":
     if stats[2]:
         # f.write("Lucky Winners:\n")
         for lucky in stats[2]:
-            lw.append(lucky[0])
+            lw.append(util_functions.filter_name(lucky[0]))
         #     f.write("* "+lucky[0])
         #     f.write("\n")
         # f.write("\n")
@@ -230,7 +242,7 @@ if __name__ == "__main__":
     if stats[3]:
         # f.write("Unlucky Losers:\n")
         for unlucky in stats[3]:
-            ul.append(unlucky[0])
+            ul.append(util_functions.filter_name(unlucky[0]))
         #     f.write("* "+unlucky[0])
         #     f.write("\n")
         #     # f.write("  "+unlucky[0]+" - "+str(unlucky[1])+"\n")
@@ -242,7 +254,7 @@ if __name__ == "__main__":
     f.write("**Best and Worst for the Week**\n")
     f.write("\n")
 
-    leag = util_functions.fetch_league(league_id=fantasy_league_id, year=2022, week = week,
+    leag = util_functions.fetch_league(league_id=fantasy_league_id, year=year, week = week,
                   espn_s2 = cookie_espn_s2, swid = cookie_swid)
 
     stats_tables = util_functions.print_weekly_stats(leag, week, lw, ul)

@@ -287,6 +287,12 @@ def sort_lineups_by_func(league: League, week: int, func, box_scores=None, **kwa
     if box_scores is None: box_scores = league.box_scores(week)
     return sorted(league.teams, key=lambda x:func(league, get_lineup(league, x, week, box_scores), **kwargs))
 
+def filter_name(full_name):
+    first_name = full_name.split()[0].capitalize()
+    if first_name == "Nick":
+        first_name = first_name + " " + full_name.split()[1][0].capitalize()
+    return first_name
+
 def print_weekly_stats(league: League, week: int, lucky_winners, unlucky_losers):
     ''' Prints weekly stat report for a league during a given week '''
     # Load box scores for specified week
@@ -294,34 +300,34 @@ def print_weekly_stats(league: League, week: int, lucky_winners, unlucky_losers)
     print(lucky_winners)
     print(unlucky_losers)
     
-    statsTable = [['Most Points Scored: ', sorted(league.teams, key=lambda x:x.scores[week-1], reverse=True)[0].owner],
-                   ['Least Points Scored: ', sorted(league.teams, key=lambda x:x.scores[week-1])[0].owner],
-                   ['Best Possible Lineup: ', sort_lineups_by_func(league, week, get_best_lineup, box_scores)[-1].owner],
+    statsTable = [['Most Points Scored: ', filter_name(sorted(league.teams, key=lambda x:x.scores[week-1], reverse=True)[0].owner)],
+                   ['Least Points Scored: ', filter_name(sorted(league.teams, key=lambda x:x.scores[week-1])[0].owner)],
+                   ['Best Possible Lineup: ', filter_name(sort_lineups_by_func(league, week, get_best_lineup, box_scores)[-1].owner)],
                    #['Best Trio: ', sort_lineups_by_func(league, week, get_best_trio, box_scores)[-1].owner],
                    #['Worst Trio: ', sort_lineups_by_func(league, week, get_best_trio, box_scores)[0].owner],
-                   ['Best Lineup Setter', sort_lineups_by_func(league, week, get_lineup_efficiency, box_scores)[-1].owner],
-                   ['Worst Lineup Setter', sort_lineups_by_func(league, week, get_lineup_efficiency, box_scores)[0].owner],
+                   ['Best Lineup Setter', filter_name(sort_lineups_by_func(league, week, get_lineup_efficiency, box_scores)[-1].owner)],
+                   ['Worst Lineup Setter', filter_name(sort_lineups_by_func(league, week, get_lineup_efficiency, box_scores)[0].owner)],
                    ['Lucky Winners', ',<br />'.join(lucky_winners)],
                    ['Unlucky Losers', ',<br />'.join(unlucky_losers)],
                    # ['---------------------','----------------'],
                    ]
-    statsTable2 = [['Best QBs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='QB')[-1].owner],
-                   ['Best RBs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='RB')[-1].owner],
-                   ['Best WRs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='WR')[-1].owner], 
-                   ['Best TEs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='TE')[-1].owner],
+    statsTable2 = [['Best QBs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='QB')[-1].owner)],
+                   ['Best RBs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='RB')[-1].owner)],
+                   ['Best WRs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='WR')[-1].owner)], 
+                   ['Best TEs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='TE')[-1].owner)],
                    # ['Best Flex: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'RB/WR/TE')[-1].owner],
-                   ['Best DST: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'D/ST')[-1].owner],
-                   ['Best K: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='K')[-1].owner],
-                   ['Best Bench:', sort_lineups_by_func(league, week, sum_bench_points, box_scores)[-1].owner],
+                   ['Best DST: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'D/ST')[-1].owner)],
+                   ['Best K: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='K')[-1].owner)],
+                   ['Best Bench:', filter_name(sort_lineups_by_func(league, week, sum_bench_points, box_scores)[-1].owner)],
                    ['---------------------','----------------'],
-                   ['Worst QBs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='QB')[0].owner],
-                   ['Worst RBs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='RB')[0].owner],
-                   ['Worst WRs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='WR')[0].owner], 
-                   ['Worst TEs: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='TE')[0].owner],
+                   ['Worst QBs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='QB')[0].owner)],
+                   ['Worst RBs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='RB')[0].owner)],
+                   ['Worst WRs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='WR')[0].owner)], 
+                   ['Worst TEs: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='TE')[0].owner)],
                    # ['Worst Flex: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'RB/WR/TE')[0].owner],
-                   ['Worst DST: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'D/ST')[0].owner],
-                   ['Worst K: ', sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='K')[0].owner],
-                   ['Worst Bench:', sort_lineups_by_func(league, week, sum_bench_points, box_scores)[0].owner],
+                   ['Worst DST: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot=r'D/ST')[0].owner)],
+                   ['Worst K: ', filter_name(sort_lineups_by_func(league, week, avg_slot_score, box_scores, slot='K')[0].owner)],
+                   ['Worst Bench:', filter_name(sort_lineups_by_func(league, week, sum_bench_points, box_scores)[0].owner)],
                    ]
     # print('\n', table(statsTable, headers = ['Week ' + str(week), ''], tablefmt='github')) 
     return statsTable, statsTable2
@@ -341,9 +347,9 @@ def print_current_standings(league: League):
     for team in standings:
         results_table += [[ team.team_name, team.wins, team.losses, team.ties, team.points_for, team.owner ]]
         if team.division_id == 0:
-            bd_results_table += [[ team.team_name, team.wins, team.losses, team.ties, team.points_for, team.owner ]]
+            bd_results_table += [[ team.team_name, team.wins, team.losses, team.ties, team.points_for, filter_name(team.owner) ]]
         else:
-            jt_results_table += [[ team.team_name, team.wins, team.losses, team.ties, team.points_for, team.owner ]]
+            jt_results_table += [[ team.team_name, team.wins, team.losses, team.ties, team.points_for, filter_name(team.owner) ]]
         print(team)
     print('\nWeek {}\n'.format(league.currentMatchupPeriod),  
           table(results_table, 
@@ -373,7 +379,7 @@ def print_power_rankings(league: League, week):
     for team_tuple in pr:
         team = team_tuple[1]
         pr_score = team_tuple[0]
-        power_rankings += [[ rank, team.team_name, pr_score, team.wins, team.losses, team.ties, team.playoff_pct, team.points_for, team.owner ]]
+        power_rankings += [[ rank, team.team_name, pr_score, team.wins, team.losses, team.ties, team.playoff_pct, team.points_for, filter_name(team.owner) ]]
         print(team)
         rank += 1
     print('\nPower Rankings Week {}\n'.format(week),  
@@ -463,15 +469,60 @@ def get_team_max(df, col, by='team_owner', keep=None):
     else: return value_counts
 
 if __name__ == '__main__':
-    week = int(sys.argv[1])
-    leag = fetch_league(league_id = fantasy_league_id, year = 2022, week = week,
-                  espn_s2 = cookie_espn_s2, swid = cookie_swid)
+    # week = int(sys.argv[1])
+    # leag = fetch_league(league_id = fantasy_league_id, year = 2022, week = week,
+                  # espn_s2 = cookie_espn_s2, swid = cookie_swid)
+
+    # league = League(league_id=fantasy_league_id,
+#                     year=2022,
+#                     swid=cookie_swid, 
+#                     espn_s2=cookie_espn_s2)  
+    # print("LEAGUE")
+    # print(league.standings())
+    # md = []
+
+    # league history 
+    lh = []
+    start = 2020
+    end = 2022
+    for year in range(start, end+1):
+        print("YEAR ", year)
+        league = League(league_id=fantasy_league_id, year=year, swid=cookie_swid, espn_s2=cookie_espn_s2)
+        for team in league.teams:
+            # team yearly summary series
+            lh.append([year, team.owner.capitalize(), team.team_id, team.team_name, team.points_for,
+                       team.wins, team.losses, team.ties, team.logo_url, team.schedule,
+                       team.scores, team.outcomes, team.final_standing])
+
+    # print(lh)
+    lhdf = pd.DataFrame(lh, columns=["year", "owner", "id", "name", "points_for", 
+                                     "wins", "losses", "ties", "logo", "schedule",
+                                     "scores", "outcomes", "final_standing"])
+    print(lhdf)
+    # lhdf.to_excel("history.xlsx")
+
+    records_list = []
+    owner_list = lhdf["owner"].unique()
+    for owner in owner_list:
+        cdf = lhdf[(lhdf["owner"] == owner)]
+        records_list.append([owner, cdf["wins"].sum(), cdf["losses"].sum(), 
+                             cdf["ties"].sum(), cdf["year"].count()])
+
+    print(records_list)
+
+    # print("owner list")
+    # print(owner_list)
+    # cdf = lhdf[(lhdf["owner"] == "Chris Donovan")]
+    # print(cdf)
+    # print(cdf["wins"].sum())
+    # print(cdf["losses"].sum())
+    # print(cdf["ties"].sum())
 
     # print_weekly_stats(leag, week)
     # print_power_rankings(leag, week)
     # print_current_standings(leag)
 
-    output = []
-    output.append(print_weekly_stats(leag, week, lw, ul))
-    print_power_rankings(leag, week)
-    print_current_standings(leag)
+    # output = []
+    # output.append(print_weekly_stats(leag, week, lw, ul))
+    # print_power_rankings(leag, week)
+    # print_current_standings(leag)

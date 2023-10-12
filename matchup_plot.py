@@ -166,7 +166,7 @@ def get_teamnames(league_id, season, week, swid='', espn=''):
     print(tm_names)
     return tm_names
 
-def plot_week(d, data, week, tm_names, nummatchups=5, 
+def plot_week(d, data, week, tm_names, _year, nummatchups=5,
               minx=70, maxx=200, legend=4):
     fig, ax = plt.subplots(1,1, figsize=(12,8))
 
@@ -246,7 +246,7 @@ def plot_week(d, data, week, tm_names, nummatchups=5,
     ax.set(title='Week %d' % week)
 
     # return ax
-    plt.savefig('../rebeltigerffl/assets/img/week'+str(week)+'_matchups.png', bbox_inches="tight")
+    plt.savefig('../rebeltigerffl/assets/img/matchup_'+str(_year)+'-'+str(week)+'.png', bbox_inches="tight")
 
 def generate_matchup_plot(_week, _year):
     league_id = fantasy_league_id
@@ -297,6 +297,6 @@ def generate_matchup_plot(_week, _year):
     '''
 
     # ax = plot_week(d, wdata, week, tms, nummatchups=5)
-    plot_week(d, wdata, week, tms, nummatchups=5)
+    plot_week(d, wdata, week, tms, season, nummatchups=5)
     # plt.show()
     # plt.savefig('../rebeltigerffl/assets/img/week'+str(week)+'_matchups.png', bbox_inches="tight")
