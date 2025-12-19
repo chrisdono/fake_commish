@@ -18,7 +18,7 @@ league_id = fantasy_league_id
 espn = cookie_espn_s2
 swid = cookie_swid
 
-season = 2022
+season = 2024
 posns = ['QB', 'RB', 'WR', 'RB/WR', 'TE', 'D/ST', 'K']
 struc = [1,2,2,1,1,1,1]
 
@@ -41,7 +41,8 @@ def get_matchups(league_id, season, week, swid='', espn=''):
     Pull full JSON of matchup data from ESPN API for a particular week.
     '''
     
-    url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    # url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    url = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
       str(season) + '/segments/0/leagues/' + str(league_id)
 
     r = requests.get(url + '?view=mMatchup&view=mMatchupScore',
@@ -155,7 +156,8 @@ def compute_pts(slates, posns, struc):
     return data
 
 def get_teamnames(league_id, season, week, swid='', espn=''):
-    url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    # url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    url = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
       str(season) + '/segments/0/leagues/' + str(league_id)
     
     r = requests.get(url + '?view=mTeam',
@@ -163,8 +165,11 @@ def get_teamnames(league_id, season, week, swid='', espn=''):
                   cookies={"SWID": swid, "espn_s2": espn})
     d = r.json()
     
-    tm_names = {tm['id']: tm['location'].strip() + ' ' + tm['nickname'].strip() \
-                for tm in d['teams']}
+    # print("DEBUG")
+    # print(d['teams'])
+    # tm_names = {tm['id']: tm['location'].strip() + ' ' + tm['nickname'].strip() \
+    #             for tm in d['teams']}
+    tm_names = {tm['id']: tm['name'].strip() for tm in d['teams']}
     
     return tm_names
 
@@ -229,7 +234,7 @@ for tmid, tmname in tm_names.items():
 
 fig, ax = plt.subplots(1,1, figsize=(9,8))
 
-playoffs = [5, 11, 13, 14]
+playoffs = [5, 12, 17, 18]
 
 clist = sns.color_palette('deep', len(tm_names))
 
@@ -240,7 +245,7 @@ miny, maxy = min([zz['opt'] for zz in z])-5, max([zz['opt'] for zz in z])+10
 
 # ax.plot([0,0], [miny+5, maxy-10], 'k-', alpha=0.2)
 ax.plot([avgdiffs, avgdiffs], [miny+5, 148], 'k--', alpha=0.2)
-ax.plot([-25, -5], [avgopts, avgopts], 'k--', alpha=0.2)
+ax.plot([-30, -5], [avgopts, avgopts], 'k--', alpha=0.2)
 ax.text(maxx-15, avgopts-1.5, 'LEAGUE AVERAGES', {'color': 'black', 'fontstyle': 'italic'},
         alpha=0.5)
 
@@ -253,12 +258,12 @@ for i, zz in enumerate(z):
 ax.legend(bbox_to_anchor=(1.05, 0.8), frameon=False)
 
 # this is really hacky
-ax.arrow(-22,maxy-5, 14,0,
+ax.arrow(-27,maxy-5, 14,0,
          head_width=1.5, head_length=2, facecolor='k', edgecolor='k', alpha=0.2)
-ax.text(-20,maxy-4, 'Better Starter Selection', {'color': 'black', 'fontstyle': 'italic'}, alpha=0.5)
-ax.arrow(-27,miny+10, 0, (maxy-miny) / 2,
+ax.text(-25,maxy-4, 'Better Starter Selection', {'color': 'black', 'fontstyle': 'italic'}, alpha=0.5)
+ax.arrow(-35,miny+10, 0, (maxy-miny) / 2,
          head_width=1, head_length=3, facecolor='k', edgecolor='k', alpha=0.2)
-ax.text(-28,miny+20, 'Better Roster', {'color': 'black', 'fontstyle': 'italic'},
+ax.text(-37,miny+20, 'Better Roster', {'color': 'black', 'fontstyle': 'italic'},
         rotation=90, alpha=0.5)
 
 ax.set(xlim=[minx,maxx], ylim=[miny,maxy],
@@ -267,4 +272,4 @@ ax.set(xlim=[minx,maxx], ylim=[miny,maxy],
        ylabel='Best Possible Points (Season Average)',
        title='%d Rebel Tiger FFL Season' % season)
 
-fig.savefig('roster_skill_final_2022.png', bbox_inches='tight')
+fig.savefig('roster_skill_final_2024.png', bbox_inches='tight')

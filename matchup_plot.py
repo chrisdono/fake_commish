@@ -33,7 +33,8 @@ def get_matchups(league_id, season, week, swid='', espn=''):
     Pull full JSON of matchup data from ESPN API for a particular week.
     '''
     
-    url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    # url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    url = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
       str(season) + '/segments/0/leagues/' + str(league_id)
 
     r = requests.get(url + '?view=mMatchup&view=mMatchupScore',
@@ -42,6 +43,8 @@ def get_matchups(league_id, season, week, swid='', espn=''):
     # f = open('djson.json', 'w')
     # f.write(r.text)
     # f.close()
+    print("DEBUGGING JSON")
+    print(r)
     return r.json()
 
 # def get_slates(json):
@@ -152,16 +155,20 @@ def compute_pts(slates, posns, struc):
     return data
 
 def get_teamnames(league_id, season, week, swid='', espn=''):
-    url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    # url = 'https://fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
+    url = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
       str(season) + '/segments/0/leagues/' + str(league_id)
     
     r = requests.get(url + '?view=mTeam',
                   params={'scoringPeriodId': week},
                   cookies={"SWID": swid, "espn_s2": espn})
     d = r.json()
+    print("DEBUG")
+    print(d['teams'][0])
     
-    tm_names = {tm['id']: tm['location'].strip() + ' ' + tm['nickname'].strip() \
-                for tm in d['teams']}
+    # tm_names = {tm['id']: tm['location'].strip() + ' ' + tm['nickname'].strip() \
+                # for tm in d['teams']}
+    tm_names = {tm['id']: tm['name'].strip() for tm in d['teams']}
     
     print(tm_names)
     return tm_names

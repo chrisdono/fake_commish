@@ -27,7 +27,8 @@ def set_league_endpoint(league: League):
     # else:                           # ESPN API v2
     #     league.endpoint = "https://fantasy.espn.com/apis/v3/games/ffl/leagueHistory/" + \
     #         str(league.league_id) + "?seasonId=" + str(league.year)
-    league.endpoint = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/" + \
+    # league.endpoint = "https://fantasy.espn.com/apis/v3/games/ffl/seasons/" + \
+    league.endpoint = 'https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/' + \
         str(league.year) + "/segments/0/leagues/" + str(league.league_id)
         
 
@@ -84,6 +85,23 @@ def fetch_league(league_id: int, year: int, week: int, swid: str, espn_s2: str):
     # Set league endpoint
     set_league_endpoint(league)
     print(league.endpoint)
+
+    # hack to deal with getting owner names
+    team_to_owner = {"Fortes and Blounts": "Chris", 
+                     "Hugh's  Butt Dial": "Brian",
+                     "They Tookerrr Jobs": "Alan",
+                     "Eifert  for the Bradys": "David", 
+                     "Joey Freshwater": "Tyler", 
+                     "Let em breathe 68": "Lee", 
+                     "Dixie Normous": "Trevor", 
+                     " The Mayor -": "Bill", 
+                     "Quiet Quitters": "Nick M", 
+                     "The Saucy Sheriff": "Nick H"}
+
+    # Set the owner name for each team
+    for team in league.teams:
+        team.owner = team_to_owner[team.team_name]
+
     
     # Get roster information
     get_roster_settings(league)

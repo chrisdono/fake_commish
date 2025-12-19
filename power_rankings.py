@@ -16,7 +16,7 @@ cookie_swid = os.getenv("SWID")
 
 if __name__ == "__main__":
     week = int(sys.argv[1])
-    year = 2023
+    year = 2024
     # filename = "power_rankings"
     filename = f"power_rankings_w{week+1}"
     # don't need a title

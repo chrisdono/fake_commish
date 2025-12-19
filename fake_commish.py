@@ -8,11 +8,14 @@ import wrapup_gifs
 import util_functions
 import matchup_plot
 from tabulate import tabulate as table
+import requests
+import re
 # from mdutils.mdutils import MdUtils
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 fantasy_league_id = int(os.getenv("LEAGUE_ID"))
 cookie_espn_s2 = os.getenv("ESPN_S2")
 cookie_swid = os.getenv("SWID")
@@ -26,6 +29,24 @@ class wrapup:
         year = _year
         self.league = League(league_id=league_id, year=year, 
                         espn_s2=cookie_espn_s2, swid = cookie_swid)
+
+        print("teams")
+        print(self.league.teams)
+
+        team_to_owner = {"Fortes and Blounts": "Chris", 
+                         "Hugh's  Butt Dial": "Brian",
+                         "They Tookerrr Jobs": "Alan",
+                         "Eifert  for the Bradys": "David", 
+                         "Joey Freshwater": "Tyler", 
+                         "Let em breathe 68": "Lee", 
+                         "Dixie Normous": "Trevor", 
+                         " The Mayor -": "Bill", 
+                         "Quiet Quitters": "Nick M", 
+                         "The Saucy Sheriff": "Nick H"}
+
+        # Set the owner name for each team
+        for team in self.league.teams:
+            team.owner = team_to_owner[team.team_name]
 
     def create_prompt(self):
         i = 1
@@ -65,6 +86,7 @@ class wrapup:
 
         i = 1
         output.append('\n')
+        '''
         output.append(f'WEEK {self.week} STANDINGS\n')
         output.append(f'place. owner. wins-losses. playoff chance.\n')
         for t in self.league.standings():
@@ -78,7 +100,9 @@ class wrapup:
             output.append('. ')
             output.append(str(t.playoff_pct))
             output.append('%.\n')
+            output.append('\n')
             i += 1
+        '''
 
         # print(''.join(output))
         return ''.join(output)
@@ -134,6 +158,7 @@ class wrapup:
         # return ''.join(output)
         return output
 
+    '''
 def get_summary(new_prompt):
     response = openai.Completion.create(
             # model="text-davinci-002",
@@ -151,22 +176,40 @@ def get_summary(new_prompt):
             prompt=new_prompt
         )
     print(response)
-    # print(response.choices[0].text)
     return response.choices[0].text
+    '''
+system_directive = "Summarize the notable games from the week and notable standings info. Praise the winners, highest scorers, and/or top standings in an overly dramatic way. Make fun of the losers, low scorers, and teams low in the standings in a mean, offensive, and vulgar manner. Make references or analogies to sports and pop culture when making fun of people. Summary should be 8 to 14 sentences long.  Pretend you are an offensive comic like Bill Burr."
+
+def get_summary(new_prompt):
+    client = openai.OpenAI(api_key=api_key)
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",  # Change to the desired model
+        messages=[
+            {"role": "system", "content": system_directive},
+            {"role": "user", "content": new_prompt}
+        ],
+        max_tokens=2000
+    )
+
+    print("RESPONSE")
+    print(response)
+    return response.choices[0].message.content
 
 
 def generate_prompt(new_wrapup):
-    return open('ai_prompt.txt', 'r').read().format(new_wrapup)
+    # return open('ai_prompt.txt', 'r').read().format(new_wrapup)
+    return "Summary:\n{}".format(new_wrapup)
 
 if __name__ == "__main__":
     week = int(sys.argv[1])
     year = int(sys.argv[2])
     year_string = str(year)
+    date_formatted = sys.argv[3]
     filename = "week_" + str(week)
     # don't need a title
     filetitle = "Week " + str(week)
-    current_date = datetime.datetime.now()
-    date_formatted = current_date.strftime("%Y-%m-%d")
+    # current_date = datetime.datetime.now()
+    # date_formatted = current_date.strftime("%Y-%m-%d")
 
     f = open("../rebeltigerffl/_posts/"+str(year)+"_wrapups/"+date_formatted+"-"+filename+".md", "w")
 
