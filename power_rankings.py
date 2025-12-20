@@ -16,7 +16,7 @@ cookie_swid = os.getenv("SWID")
 
 if __name__ == "__main__":
     week = int(sys.argv[1])
-    year = 2024
+    year = 2025
     # filename = "power_rankings"
     filename = f"power_rankings_w{week+1}"
     # don't need a title
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     date_formatted = current_date.strftime("%Y-%m-%d")
 
     # f = open("../rebeltigerffl/"+filename+".md", "w")
-    f = open("../rebeltigerffl/_posts/2023_power_rankings/"+date_formatted+"-"+filename+".md", "w")
+    f = open("../rebeltigerffl/_posts/2025_power_rankings/"+date_formatted+"-"+filename+".md", "w")
 
     # add front matter
     f.write("---\n")

@@ -1,7 +1,7 @@
 import datetime
 import sys
 import os
-import openai
+import anthropic
 from espn_api.football import League
 from dotenv import load_dotenv
 import wrapup_gifs
@@ -14,8 +14,8 @@ import re
 
 load_dotenv()
 
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-api_key = os.getenv("OPENAI_API_KEY")
+# anthropic.api_key = os.getenv("ANTHROPIC_API_KEY")
+api_key = os.getenv("ANTHROPIC_API_KEY")
 fantasy_league_id = int(os.getenv("LEAGUE_ID"))
 cookie_espn_s2 = os.getenv("ESPN_S2")
 cookie_swid = os.getenv("SWID")
@@ -181,19 +181,19 @@ def get_summary(new_prompt):
 system_directive = "Summarize the notable games from the week and notable standings info. Praise the winners, highest scorers, and/or top standings in an overly dramatic way. Make fun of the losers, low scorers, and teams low in the standings in a mean, offensive, and vulgar manner. Make references or analogies to sports and pop culture when making fun of people. Summary should be 8 to 14 sentences long.  Pretend you are an offensive comic like Bill Burr."
 
 def get_summary(new_prompt):
-    client = openai.OpenAI(api_key=api_key)
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",  # Change to the desired model
+    client = anthropic.Anthropic(api_key=api_key)
+    response = client.messages.create(
+        model="claude-sonnet-4-5-20250929",  # Latest Claude model
+        max_tokens=2000,
+        system=system_directive,
         messages=[
-            {"role": "system", "content": system_directive},
             {"role": "user", "content": new_prompt}
-        ],
-        max_tokens=2000
+        ]
     )
 
     print("RESPONSE")
     print(response)
-    return response.choices[0].message.content
+    return response.content[0].text
 
 
 def generate_prompt(new_wrapup):

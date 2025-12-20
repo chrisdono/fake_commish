@@ -18,7 +18,7 @@ league_id = fantasy_league_id
 espn = cookie_espn_s2
 swid = cookie_swid
 
-season = 2024
+season = 2025
 posns = ['QB', 'RB', 'WR', 'RB/WR', 'TE', 'D/ST', 'K']
 struc = [1,2,2,1,1,1,1]
 
@@ -272,4 +272,4 @@ ax.set(xlim=[minx,maxx], ylim=[miny,maxy],
        ylabel='Best Possible Points (Season Average)',
        title='%d Rebel Tiger FFL Season' % season)
 
-fig.savefig('roster_skill_final_2024.png', bbox_inches='tight')
+fig.savefig('roster_skill_final_2025.png', bbox_inches='tight')
